@@ -1,4 +1,4 @@
-#FROM neo4j:3.5
-FROM nginx:alpine
-RUN echo "TODO create this dockerfile"
-CMD ["ls", "-al", "/"]
+FROM maven:3-openjdk-8
+VOLUME /opt/output
+COPY runner.sh /opt/runner.sh
+CMD ["bash", "-c", "/opt/runner.sh"]
