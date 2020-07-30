@@ -10,7 +10,9 @@ DOCKER_IMAGE="d_jar-builder" # the image name and the folder with the files
 PARAM="$1"
 PROGPATH=`echo $0 | sed -e 's,[\\/][^\\/][^\\/]*$,,'`
 cd "${PROGPATH}" || exit 5;
+SOURCE_PATH="masymos-source/"
 BUILDS_PATH="masymos-builds/"
+MAVEN_LIBS="maven-dependencies/"
 
 echo "### remove old jars from ${BUILDS_PATH}"
 rm "${BUILDS_PATH}/*.jar"
@@ -30,6 +32,8 @@ fi
 echo "### run docker image ${DOCKER_IMAGE}"
 docker run --rm \
             --name "${DOCKER_IMAGE}" \
+            -v "$PWD/${MAVEN_LIBS}":"/root/.m2" \
+            -v "$PWD/${SOURCE_PATH}":"/opt/source" \
             -v "$PWD/${BUILDS_PATH}":"/opt/output" \
             ${DOCKER_IMAGE}
 

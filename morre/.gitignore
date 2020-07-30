@@ -1,1 +1,5 @@
-masymod-builds/*
+masymos-builds/*/
+masymos-builds/*.jar
+masymos-source/masymos-*
+maven-dependencies/*
+!maven-dependencies/README.md

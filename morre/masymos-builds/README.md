@@ -1,0 +1,1 @@
+this directory contains the built jar files and libraries after `maven-build-masymos-jars.sh` has finished

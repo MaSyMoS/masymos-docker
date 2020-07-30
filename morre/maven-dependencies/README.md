@@ -1,0 +1,1 @@
+this directory will be mounted in the build-container and contains the downloaded maven artifacts
