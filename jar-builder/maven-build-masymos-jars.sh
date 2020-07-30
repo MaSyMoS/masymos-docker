@@ -5,15 +5,15 @@
 # paramter
 #   rebuild    OPTIONAL: docker image will be created again
 
-DOCKER_IMAGE_NAME="masymos-jar-builder"     # the image name and the folder with the files
-DOCKER_IMAGE_PATH="d_jar-builder"           # the image name and the folder with the files
-MAVEN_VOLUME_NAME="masymos_maven_artifacts" # the volume name to store the maven artifacts
+readonly DOCKER_IMAGE_NAME="masymos-jar-builder"     # the image name and the folder with the files
+readonly DOCKER_IMAGE_PATH="d_jar-builder"           # the image name and the folder with the files
+readonly MAVEN_VOLUME_NAME="masymos_maven_artifacts" # the volume name to store the maven artifacts
 
-PARAM="$1"
-PROGPATH=`echo $0 | sed -e 's,[\\/][^\\/][^\\/]*$,,'`
+readonly PARAM="$1"
+readonly PROGPATH=`echo $0 | sed -e 's,[\\/][^\\/][^\\/]*$,,'`
 cd "${PROGPATH}" || exit 5;
-SOURCE_PATH="masymos-source/"
-BUILDS_PATH="masymos-builds/"
+readonly SOURCE_PATH="masymos-source/"
+readonly BUILDS_PATH="masymos-builds/"
 
 echo "### remove old jars from ${BUILDS_PATH}"
 rm -v ${BUILDS_PATH}/*.jar
