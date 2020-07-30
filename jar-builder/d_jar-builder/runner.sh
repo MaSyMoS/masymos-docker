@@ -39,6 +39,5 @@ cp /opt/source/masymos-morre/target/lib/*.jar /opt/output/libs   # libs for morr
 
 # set right persmission for all mounted volumes
 source /opt/source/user_group_numbers.sh
-chown -R ${HOST_UID}:${HOST_GID} /root/.m2
 chown -R ${HOST_UID}:${HOST_GID} /opt/source/
 chown -R ${HOST_UID}:${HOST_GID} /opt/output/
