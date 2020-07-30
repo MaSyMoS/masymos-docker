@@ -3,6 +3,16 @@
 # uncomment to work manually in the container
 # while [[ true ]]; do sleep 1; done; exit 23
 
+# check
+if [[ ! -d /opt/source/masymos-core ]]; then
+    echo "Repository masymos-core does not exist! Please clone the repositories to directory masymos-source."
+    exit 7
+fi
+if [[ ! -d /opt/source/masymos-morre ]]; then
+    echo "Repository masymos-morre does not exist! Please clone the repositories to directory masymos-source."
+    exit 7
+fi
+
 # maven load dependencies and build
 cd /opt/source/masymos-core || exit 5
 mvn dependency:go-offline
