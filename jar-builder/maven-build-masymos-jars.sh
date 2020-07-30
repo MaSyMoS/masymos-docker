@@ -16,7 +16,7 @@ BUILDS_PATH="masymos-builds/"
 MAVEN_LIBS="maven-dependencies/"
 
 echo "### remove old jars from ${BUILDS_PATH}"
-rm "${BUILDS_PATH}/*.jar"
+rm -v "${BUILDS_PATH}/*.jar"
 
 # check parameter
 if [[ "$PARAM" == "rebuild" ]]; then
@@ -28,6 +28,10 @@ fi
 if [[ ! -d "${SOURCE_PATH}/masymos-core" ]]; then
     echo "### Source-Repository masymos-core missing → clone to ${SOURCE_PATH}"
     git clone https://github.com/MaSyMoS/masymos-core.git "${SOURCE_PATH}/masymos-core"
+fi
+if [[ ! -d "${SOURCE_PATH}/masymos-cli" ]]; then
+    echo "### Source-Repository masymos-cli missing → clone to ${SOURCE_PATH}"
+    git clone https://github.com/MaSyMoS/masymos-cli.git "${SOURCE_PATH}/masymos-cli"
 fi
 if [[ ! -d "${SOURCE_PATH}/masymos-morre" ]]; then
     echo "### Source-Repository masymos-morre missing → clone to ${SOURCE_PATH}"
