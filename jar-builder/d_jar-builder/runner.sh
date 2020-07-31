@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# this file is started by the Dockerfile on cotainer run
 
 # uncomment to work manually in the container
 # while [[ true ]]; do echo "runner disabled"; sleep 60; done; exit 23

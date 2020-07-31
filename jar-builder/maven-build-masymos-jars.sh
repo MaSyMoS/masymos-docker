@@ -55,9 +55,9 @@ fi
 echo "### run docker image ${DOCKER_IMAGE_NAME}"
 docker run --rm \
             --name "${DOCKER_IMAGE_NAME}" \
-            -v $MAVEN_VOLUME_NAME:"/root/.m2" \
-            -v "$PWD/${SOURCE_PATH}":"/opt/source" \
-            -v "$PWD/${BUILDS_PATH}":"/opt/output" \
+            -v "$MAVEN_VOLUME_NAME:/root/.m2" \
+            -v "$PWD/${SOURCE_PATH}:/opt/source" \
+            -v "$PWD/${BUILDS_PATH}:/opt/output" \
             ${DOCKER_IMAGE_NAME}
 
 ret=$?
