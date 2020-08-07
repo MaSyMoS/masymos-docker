@@ -17,6 +17,7 @@ readonly BUILDS_PATH="masymos-builds/"
 
 echo "### remove old jars from ${BUILDS_PATH}"
 rm -v ${BUILDS_PATH}/*.jar
+rm -R ${BUILDS_PATH}/libs
 
 # check parameter
 if [[ "$PARAM" == "rebuild" ]]; then
