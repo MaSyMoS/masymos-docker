@@ -16,8 +16,8 @@ readonly SOURCE_PATH="masymos-source/"
 readonly BUILDS_PATH="masymos-builds/"
 
 echo "### remove old jars from ${BUILDS_PATH}"
-rm -v ${BUILDS_PATH}/*.jar
-rm -R ${BUILDS_PATH}/libs
+rm --verbose ${BUILDS_PATH}/*.jar
+rm --recursive ${BUILDS_PATH}/libs
 
 # check parameter
 if [[ "$PARAM" == "rebuild" ]]; then
@@ -56,9 +56,9 @@ fi
 echo "### run docker image ${DOCKER_IMAGE_NAME}"
 docker run --rm \
             --name "${DOCKER_IMAGE_NAME}" \
-            -v "$MAVEN_VOLUME_NAME:/root/.m2" \
-            -v "$PWD/${SOURCE_PATH}:/opt/source" \
-            -v "$PWD/${BUILDS_PATH}:/opt/output" \
+            --volume "$MAVEN_VOLUME_NAME:/root/.m2" \
+            --volume "$PWD/${SOURCE_PATH}:/opt/source" \
+            --volume "$PWD/${BUILDS_PATH}:/opt/output" \
             ${DOCKER_IMAGE_NAME}
 
 ret=$?
