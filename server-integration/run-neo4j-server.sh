@@ -17,6 +17,12 @@ readonly PROGPATH=`echo $0 | sed -e 's,[\\/][^\\/][^\\/]*$,,'`
 cd "${PROGPATH}" || exit 5;
 __build=1
 
+# check if running
+if [[ "$( docker container inspect -f '{{.State.Running}}' "${DOCKER_IMAGE_NAME}" )" == "true" ]]; then
+    echo "### Container is still running; stop with 'docker stop ${DOCKER_IMAGE_NAME}'"
+    exit 10
+fi
+
 # check parameter
 if [[ "$PARAM" == "rebuild" ]]; then
     echo "### remove old docker image"
@@ -58,13 +64,16 @@ fi
 
 echo "### run docker image ${DOCKER_IMAGE_NAME}"
 docker run --rm \
+    --detach \
+    --env "EXTENSION_SCRIPT=/extra_conf.sh" \
+    --env=NEO4J_AUTH=none \
     --name "${DOCKER_IMAGE_NAME}" \
-    --publish=7474:7474 \
-    --publish=7687:7687 \
+    --publish 7474:7474 \
+    --publish 7687:7687 \
     --volume "$NEO4J_VOLUME_NAME:/data" \
     ${DOCKER_IMAGE_NAME}
 
-## optional parameters
+## OPTINAL PARAMETERS
 ## set initial password
 #    --env NEO4J_AUTH=neo4j/your_password
 ## disable authentication
@@ -77,6 +86,8 @@ ret=$?
 if [[ $ret -ne 0 ]]; then
     echo "### docker error, retur code ${ret}"
 else
-    echo "### done"
+    echo "### done - neo4j is running"
+    echo "### see logs with 'docker logs --follow ${DOCKER_IMAGE_NAME}'"
+    echo "### stop with 'docker stop ${DOCKER_IMAGE_NAME}'"
 fi
 
