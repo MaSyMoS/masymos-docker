@@ -28,7 +28,7 @@ if [[ "$PARAM" == "rebuild" ]]; then
     echo "### remove old docker image"
     docker image rm -f ${DOCKER_IMAGE_NAME}
 fi
-# check, if docker image esists
+# check, if docker image exists
 if [[ "$PARAM" == "rebuild" || "$(docker images -q ${DOCKER_IMAGE_NAME} | wc -l)" -eq 0 ]]; then
     __build=0
 fi
@@ -66,7 +66,9 @@ echo "### run docker image ${DOCKER_IMAGE_NAME}"
 docker run --rm \
     --detach \
     --env "EXTENSION_SCRIPT=/extra_conf.sh" \
-    --env=NEO4J_AUTH=none \
+    --env "NEO4J_AUTH=none" \
+    --env "NEO4J_dbms_active__database=morre" \
+    --user "$(id -u):$(id -g)" \
     --name "${DOCKER_IMAGE_NAME}" \
     --publish 7474:7474 \
     --publish 7687:7687 \
@@ -77,9 +79,9 @@ docker run --rm \
 ## set initial password
 #    --env NEO4J_AUTH=neo4j/your_password
 ## disable authentication
-#    --env=NEO4J_AUTH=none
+#    --env NEO4J_AUTH=none
 ## run neo4j with the UID7GID of the current user
-#    --user="$(id -u):$(id -g)"
+#    --user "$(id -u):$(id -g)"
 
 ret=$?
 

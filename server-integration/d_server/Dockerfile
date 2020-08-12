@@ -12,12 +12,14 @@ RUN cd /var/lib/neo4j/lib/ext || exit 1; \
     rm -v neo4j-*.jar 2>/dev/null; \
     rm -v server-*.jar 2>/dev/null;
 
-# adapt configurations
-#   REM dbms.active_database is set by docker run parameter
-#   REM dbms.security.auth_enabled can be set by docker run parameter
-RUN echo "dbms.allow_format_migration=true" >> /var/lib/neo4j/conf/neo4j.conf \
+# adjust configurations
+#   REM dbms.active_database is set by docker run env parameter
+#   REM dbms.security.auth_enabled can be set by docker run env parameter
+RUN echo "dbms.allow_upgrade=true" >> /var/lib/neo4j/conf/neo4j.conf \
  && echo "dbms.unmanaged_extension_classes=de.unirostock.morre.server.plugin=/morre" >> /var/lib/neo4j/conf/neo4j.conf \
  && sed --in-place 's|\${NEO4J_LIB}/\*:|\${NEO4J_LIB}/\*:\${NEO4J_LIB}/ext/\*:|' /var/lib/neo4j/bin/neo4j
 
+VOLUME /data
+
 # get an own script running on startup
-# COPY extra_conf.sh /extra_conf.sh
+COPY extra_conf.sh /extra_conf.sh

@@ -47,7 +47,7 @@ if [[ $? -ne 0 ]]; then
 fi
 
 
-# build docker image only, if it's not there
+# build docker image only, if it does not exist
 if [[ "$PARAM" == "rebuild" || "$(docker images -q ${DOCKER_IMAGE_NAME} | wc -l)" -eq 0 ]]; then
     echo "### build docker image ${DOCKER_IMAGE_NAME}"
     docker build -t ${DOCKER_IMAGE_NAME}:latest ${DOCKER_IMAGE_PATH}
