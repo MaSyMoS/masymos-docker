@@ -68,6 +68,7 @@ docker run --rm \
     --env "EXTENSION_SCRIPT=/extra_conf.sh" \
     --env "NEO4J_AUTH=none" \
     --env "NEO4J_dbms_active__database=morre" \
+    --env "NEO4J_dbms_allow__upgrade=true" \
     --user "$(id -u):$(id -g)" \
     --name "${DOCKER_IMAGE_NAME}" \
     --publish 7474:7474 \

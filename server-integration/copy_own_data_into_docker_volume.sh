@@ -1,20 +1,30 @@
 #!/usr/bin/env bash
+#
+# call without parameter for help
 
-#
-# set the source data directory with your database here
-# make sure to point to your database, not to the neo4j database root
-# your database is a named folder inside a folder called databases
-#
-readonly local_database_directory=""
+readonly local_database_directory="${1}"
+readonly PROGNAME=`/usr/bin/basename $0`
+cancel=1
 
 if [[ ! -d "${local_database_directory}" ]]; then
     echo "unable to find directory ${local_database_directory}"
-    exit 1
+    cancel=0
 fi
 if [[ ! -r "${local_database_directory}" ]]; then
     echo "unable to read directory ${local_database_directory}"
-    exit 2
+    cancel=0
 fi
+
+if [[ ${cancel} -eq 0 ]]; then
+    echo -e "\nUSAGE"
+    echo "\$ ${PROGNAME} /path/to/neo4j/databases/my_database"
+    echo ""
+    echo "make sure to point to your database, not to the neo4j databases root folder"
+    echo "your database is a named folder inside a folder called 'databases'"
+
+    exit 1
+fi
+
 
 readonly NEO4J_VOLUME_NAME="masymos_neo4j_database"
 # get currents user IDs
