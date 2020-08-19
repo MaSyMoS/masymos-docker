@@ -87,7 +87,7 @@ docker run --rm \
 ret=$?
 
 if [[ $ret -ne 0 ]]; then
-    echo "### docker error, retur code ${ret}"
+    echo "### docker error, return code ${ret}"
 else
     echo "### done - neo4j is running"
     echo "### see logs with 'docker logs --follow ${DOCKER_IMAGE_NAME}'"

@@ -53,18 +53,29 @@ if [[ "$PARAM" == "rebuild" || "$(docker images -q ${DOCKER_IMAGE_NAME} | wc -l)
     docker build -t ${DOCKER_IMAGE_NAME}:latest ${DOCKER_IMAGE_PATH}
 fi
 
+# docker on windows will need slightly changed path names :/
+DOCKER_SOURCE_PATH="$PWD/${SOURCE_PATH}"
+DOCKER_BUILDS_PATH="$PWD/${BUILDS_PATH}"
+# TODO - check OS
+if [[ OS is windows ]]; then
+    DOCKER_SOURCE_PATH=$(echo "$DOCKER_SOURCE_PATH" | sed -e 's|/\([A-Za-z]\)/|\1:/|')
+    DOCKER_BUILDS_PATH=$(echo "$DOCKER_BUILDS_PATH" | sed -e 's|/\([A-Za-z]\)/|\1:/|')
+    echo "### DOCKER_SOURCE_PATH: ${DOCKER_SOURCE_PATH}"
+    echo "### DOCKER_BUILDS_PATH: ${DOCKER_BUILDS_PATH}"
+fi
+
 echo "### run docker image ${DOCKER_IMAGE_NAME}"
 docker run --rm \
             --name "${DOCKER_IMAGE_NAME}" \
             --volume "$MAVEN_VOLUME_NAME:/root/.m2" \
-            --volume "$PWD/${SOURCE_PATH}:/opt/source" \
-            --volume "$PWD/${BUILDS_PATH}:/opt/output" \
+            --volume "${DOCKER_SOURCE_PATH}:/opt/source" \
+            --volume "${DOCKER_BUILDS_PATH}:/opt/output" \
             ${DOCKER_IMAGE_NAME}
 
 ret=$?
 
 if [[ $ret -ne 0 ]]; then
-    echo "### docker error, retur code ${ret}"
+    echo "### docker error, return code ${ret}"
 else
     echo "### done"
 fi

@@ -38,7 +38,7 @@ cp /opt/source/masymos-morre/target/*.jar /opt/output/           # morre plugin
 cp /opt/source/masymos-core/target/lib/*.jar /opt/output/libs    # libs for core
 cp /opt/source/masymos-morre/target/lib/*.jar /opt/output/libs   # libs for morre (incl. core)
 
-# set right persmission for all mounted volumes
+# set right permissions for all mounted volumes
 source /opt/source/user_group_numbers.sh
 chown -R ${HOST_UID}:${HOST_GID} /opt/source/
 chown -R ${HOST_UID}:${HOST_GID} /opt/output/
