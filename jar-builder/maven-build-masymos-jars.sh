@@ -54,22 +54,27 @@ if [[ "$PARAM" == "rebuild" || "$(docker images -q ${DOCKER_IMAGE_NAME} | wc -l)
 fi
 
 # docker on windows will need slightly changed path names :/
-DOCKER_SOURCE_PATH="$PWD/${SOURCE_PATH}"
-DOCKER_BUILDS_PATH="$PWD/${BUILDS_PATH}"
-# TODO - check OS
-if [[ OS is windows ]]; then
-    DOCKER_SOURCE_PATH=$(echo "$DOCKER_SOURCE_PATH" | sed -e 's|/\([A-Za-z]\)/|\1:/|')
-    DOCKER_BUILDS_PATH=$(echo "$DOCKER_BUILDS_PATH" | sed -e 's|/\([A-Za-z]\)/|\1:/|')
-    echo "### DOCKER_SOURCE_PATH: ${DOCKER_SOURCE_PATH}"
-    echo "### DOCKER_BUILDS_PATH: ${DOCKER_BUILDS_PATH}"
+docker_source_path="$PWD/${SOURCE_PATH}"
+docker_builds_path="$PWD/${BUILDS_PATH}"
+if [[ ! "$OSTYPE" ]]; then
+    echo "### bash-variable OSTYPE not set - abort"
+    exit 1
 fi
+# git-bash will return msys; Cygwin returs cygwin
+if [[ "${OSTYPE}" == "msys" || "${OSTYPE}" == "cygwin" ]]; then
+    docker_source_path=$(echo "$docker_source_path" | sed -e 's|/\([A-Za-z]\)/|\1:/|')
+    docker_builds_path=$(echo "$docker_builds_path" | sed -e 's|/\([A-Za-z]\)/|\1:/|')
+fi
+echo "### OSTYPE: ${OSTYPE}"
+echo "### docker_source_path: ${docker_source_path}"
+echo "### docker_builds_path: ${docker_builds_path}"
 
 echo "### run docker image ${DOCKER_IMAGE_NAME}"
 docker run --rm \
             --name "${DOCKER_IMAGE_NAME}" \
             --volume "$MAVEN_VOLUME_NAME:/root/.m2" \
-            --volume "${DOCKER_SOURCE_PATH}:/opt/source" \
-            --volume "${DOCKER_BUILDS_PATH}:/opt/output" \
+            --volume "${docker_source_path}:/opt/source" \
+            --volume "${docker_builds_path}:/opt/output" \
             ${DOCKER_IMAGE_NAME}
 
 ret=$?

@@ -6,6 +6,10 @@ readonly local_database_directory="${1}"
 readonly PROGNAME=`/usr/bin/basename $0`
 cancel=1
 
+#
+#   CHECKS
+#
+
 if [[ ! -d "${local_database_directory}" ]]; then
     echo "unable to find directory ${local_database_directory}"
     cancel=0
@@ -25,6 +29,23 @@ if [[ ${cancel} -eq 0 ]]; then
     exit 1
 fi
 
+# docker on windows will need slightly changed path names :/
+docker_source_path="${local_database_directory}"
+if [[ ! "$OSTYPE" ]]; then
+    echo "### bash-variable OSTYPE not set - abort"
+    exit 1
+fi
+# git-bash will return msys; Cygwin returs cygwin
+if [[ "${OSTYPE}" == "msys" || "${OSTYPE}" == "cygwin" ]]; then
+    docker_source_path=$(echo "$docker_source_path" | sed -e 's|/\([A-Za-z]\)/|\1:/|')
+fi
+echo "### OSTYPE: ${OSTYPE}"
+echo "### docker_source_path: ${docker_source_path}"
+
+
+#
+# RUN
+#
 
 readonly NEO4J_VOLUME_NAME="masymos_neo4j_database"
 # get currents user IDs
@@ -41,7 +62,7 @@ docker run --rm --name copy_data \
 echo "### copy data"
 docker run --rm --name copy_data \
     --volume "${NEO4J_VOLUME_NAME}:/opt/volume" \
-    --volume "${local_database_directory}:/opt/data":ro \
+    --volume "${docker_source_path}:/opt/data":ro \
     alpine cp -R /opt/data /opt/volume/databases/morre
 echo "### set UID/GID"
 docker run --rm --name copy_data \
