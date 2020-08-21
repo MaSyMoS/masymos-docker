@@ -62,8 +62,8 @@ if [[ ! "$OSTYPE" ]]; then
 fi
 # git-bash will return msys; Cygwin returs cygwin
 if [[ "${OSTYPE}" == "msys" || "${OSTYPE}" == "cygwin" ]]; then
-    docker_source_path=$(echo "$docker_source_path" | sed -e 's|/\([A-Za-z]\)/|\1:/|')
-    docker_builds_path=$(echo "$docker_builds_path" | sed -e 's|/\([A-Za-z]\)/|\1:/|')
+    docker_source_path=$(echo "$docker_source_path" | sed -e 's|^/\([A-Za-z]\)/|\1:/|')
+    docker_builds_path=$(echo "$docker_builds_path" | sed -e 's|^/\([A-Za-z]\)/|\1:/|')
 fi
 echo "### OSTYPE: ${OSTYPE}"
 echo "### docker_source_path: ${docker_source_path}"

@@ -37,11 +37,10 @@ if [[ ! "$OSTYPE" ]]; then
 fi
 # git-bash will return msys; Cygwin returs cygwin
 if [[ "${OSTYPE}" == "msys" || "${OSTYPE}" == "cygwin" ]]; then
-    docker_source_path=$(echo "$docker_source_path" | sed -e 's|/\([A-Za-z]\)/|\1:/|')
+    docker_source_path=$(echo "$docker_source_path" | sed -e 's|^/\([A-Za-z]\)/|\1:/|')
 fi
 echo "### OSTYPE: ${OSTYPE}"
 echo "### docker_source_path: ${docker_source_path}"
-
 
 #
 # RUN
@@ -55,25 +54,13 @@ echo "### remove old volume"
 docker volume rm -f ${NEO4J_VOLUME_NAME}
 echo "### create new volume ${NEO4J_VOLUME_NAME}"
 docker volume create ${NEO4J_VOLUME_NAME}
-echo "### create databases-folder"
-docker run --rm --name copy_data \
-    --volume "${NEO4J_VOLUME_NAME}:/opt/volume" \
-    alpine sh -c "mkdir -p /opt/volume/databases"
-echo "### copy data"
+echo "### create databases-folder; copy data; set UID/GID"
 docker run --rm --name copy_data \
     --volume "${NEO4J_VOLUME_NAME}:/opt/volume" \
     --volume "${docker_source_path}:/opt/data":ro \
-    alpine sh -c "cp -R /opt/data /opt/volume/databases/morre"
-echo "### set UID/GID"
+    alpine sh -c "mkdir -p /opt/volume/databases; cp -R /opt/data /opt/volume/databases/morre; chown -R $__uid:$__gid /opt/volume/"
+echo "### check UID/GID rights and size"
 docker run --rm --name copy_data \
     --volume "${NEO4J_VOLUME_NAME}:/opt/volume" \
-    alpine sh -c "chown -R $__uid:$__gid /opt/volume/"
-echo "### check UID/GID rights"
-docker run --rm --name copy_data \
-    --volume "${NEO4J_VOLUME_NAME}:/opt/volume" \
-    alpine sh -c "ls -al /opt/volume"
-echo "### check size"
-docker run --rm --name copy_data \
-    --volume "${NEO4J_VOLUME_NAME}:/opt/volume" \
-    alpine sh -c "du -hs /opt/volume"
+    alpine sh -c "ls -al /opt/volume; du -hs /opt/volume"
 
