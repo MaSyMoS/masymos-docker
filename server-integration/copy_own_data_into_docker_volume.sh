@@ -58,22 +58,22 @@ docker volume create ${NEO4J_VOLUME_NAME}
 echo "### create databases-folder"
 docker run --rm --name copy_data \
     --volume "${NEO4J_VOLUME_NAME}:/opt/volume" \
-    alpine mkdir -p /opt/volume/databases
+    alpine sh -c "mkdir -p /opt/volume/databases"
 echo "### copy data"
 docker run --rm --name copy_data \
     --volume "${NEO4J_VOLUME_NAME}:/opt/volume" \
     --volume "${docker_source_path}:/opt/data":ro \
-    alpine cp -R /opt/data /opt/volume/databases/morre
+    alpine sh -c "cp -R /opt/data /opt/volume/databases/morre"
 echo "### set UID/GID"
 docker run --rm --name copy_data \
     --volume "${NEO4J_VOLUME_NAME}:/opt/volume" \
-    alpine chown -R $__uid:$__gid /opt/volume/
+    alpine sh -c "chown -R $__uid:$__gid /opt/volume/"
 echo "### check UID/GID rights"
 docker run --rm --name copy_data \
     --volume "${NEO4J_VOLUME_NAME}:/opt/volume" \
-    alpine ls -al /opt/volume
+    alpine sh -c "ls -al /opt/volume"
 echo "### check size"
 docker run --rm --name copy_data \
     --volume "${NEO4J_VOLUME_NAME}:/opt/volume" \
-    alpine du -hs /opt/volume
+    alpine sh -c "du -hs /opt/volume"
 
