@@ -18,7 +18,7 @@ cd "${PROGPATH}" || exit 5;
 __build=1
 
 # check if running
-if [[ "$( docker container inspect -f '{{.State.Running}}' "${DOCKER_IMAGE_NAME}" )" == "true" ]]; then
+if [[ "$( docker container inspect -f '{{.State.Running}}' "${DOCKER_IMAGE_NAME}" 2>/dev/null )" == "true" ]]; then
     echo "### Container is still running; stop with 'docker stop ${DOCKER_IMAGE_NAME}'"
     exit 10
 fi
@@ -26,7 +26,7 @@ fi
 # check parameter
 if [[ "$PARAM" == "rebuild" ]]; then
     echo "### remove old docker image"
-    docker image rm -f ${DOCKER_IMAGE_NAME}
+    docker image rm -f ${DOCKER_IMAGE_NAME} 2> /dev/null
 fi
 # check, if docker image exists
 if [[ "$PARAM" == "rebuild" || "$(docker images -q ${DOCKER_IMAGE_NAME} | wc -l)" -eq 0 ]]; then
@@ -34,10 +34,10 @@ if [[ "$PARAM" == "rebuild" || "$(docker images -q ${DOCKER_IMAGE_NAME} | wc -l)
 fi
 
 # create neo4j database volume
-docker volume inspect $NEO4J_VOLUME_NAME
+docker volume inspect $NEO4J_VOLUME_NAME 1>/dev/null 2>&1
 if [[ $? -ne 0 ]]; then
     echo "### create docker volume ${NEO4J_VOLUME_NAME}"
-    docker volume create $NEO4J_VOLUME_NAME
+    docker volume create $NEO4J_VOLUME_NAME 1> /dev/null
 fi
 
 # build docker image
@@ -48,9 +48,16 @@ if [[ $__build -eq 0 ]]; then
           $(ls "${MASYMOS_JAR_BUILDER_SOURCE_FOLDER}/"masymos-morre-*.jar | wc -l) -eq 1 && \
           $(ls "${MASYMOS_JAR_BUILDER_SOURCE_FOLDER}/libs/"masymos-core-*.jar | wc -l) -eq 1 && \
           $(ls "${MASYMOS_JAR_BUILDER_SOURCE_FOLDER}/libs/"*.jar | wc -l) -gt 123 ]]; then
-        echo "### copy masymos jars and libraries from ${MASYMOS_JAR_BUILDER_SOURCE_FOLDER} to "
-        rm --verbose ${MASYMOS_JAR_SOURCE_FOLDER}/*.jar
-        rm --recursive ${MASYMOS_JAR_SOURCE_FOLDER}/libs
+        echo "### copy masymos jars and libraries from ${MASYMOS_JAR_BUILDER_SOURCE_FOLDER} to ${MASYMOS_JAR_SOURCE_FOLDER}"
+
+        __output=$(rm --verbose ${MASYMOS_JAR_SOURCE_FOLDER}/*.jar 2>&1)
+        if [[ $? -ne 1 ]]; then
+            echo "${__output}"
+        fi
+        __output=$(rm --recursive ${MASYMOS_JAR_SOURCE_FOLDER}/libs 2>&1)
+        if [[ $? -ne 1 ]]; then
+            echo "${__output}"
+        fi
         cp --recursive "${MASYMOS_JAR_BUILDER_SOURCE_FOLDER}/masymos-morre"*.jar "${MASYMOS_JAR_SOURCE_FOLDER}"
         cp --recursive "${MASYMOS_JAR_BUILDER_SOURCE_FOLDER}/libs" "${MASYMOS_JAR_SOURCE_FOLDER}"
     else

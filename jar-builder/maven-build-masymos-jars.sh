@@ -15,14 +15,33 @@ cd "${PROGPATH}" || exit 5;
 readonly SOURCE_PATH="masymos-source/"
 readonly BUILDS_PATH="masymos-builds/"
 
+#
+# CHECKS
+#
+if [[ ! "$OSTYPE" ]]; then
+    echo "### bash-variable OSTYPE not set - abort"
+    exit 1
+fi
+
+#
+# RUN
+#
 echo "### remove old jars from ${BUILDS_PATH}"
-rm --verbose ${BUILDS_PATH}/*.jar
-rm --recursive ${BUILDS_PATH}/libs
+
+# rm error 1 means, the file cannot be deleted beacause it doesn't exist
+__output=$(rm --verbose ${BUILDS_PATH}/*.jar 2>&1)
+if [[ $? -ne 1 ]]; then
+    echo "${__output}"
+fi
+__output=$(rm --recursive ${BUILDS_PATH}/libs 2>&1)
+if [[ $? -ne 1 ]]; then
+    echo "${__output}"
+fi
 
 # check parameter
 if [[ "$PARAM" == "rebuild" ]]; then
     echo "### remove old docker image"
-    docker image rm -f ${DOCKER_IMAGE_NAME}
+    docker image rm -f ${DOCKER_IMAGE_NAME} 2> /dev/null
 fi
 
 # check source repos
@@ -40,12 +59,11 @@ if [[ ! -d "${SOURCE_PATH}/masymos-morre" ]]; then
 fi
 
 # create maven artifacts volume
-docker volume inspect $MAVEN_VOLUME_NAME
+docker volume inspect $MAVEN_VOLUME_NAME 1>/dev/null 2>&1
 if [[ $? -ne 0 ]]; then
     echo "### create docker volume ${MAVEN_VOLUME_NAME}"
-    docker volume create $MAVEN_VOLUME_NAME
+    docker volume create $MAVEN_VOLUME_NAME 1> /dev/null
 fi
-
 
 # build docker image only, if it does not exist
 if [[ "$PARAM" == "rebuild" || "$(docker images -q ${DOCKER_IMAGE_NAME} | wc -l)" -eq 0 ]]; then
@@ -56,10 +74,6 @@ fi
 # docker on windows will need slightly changed path names :/
 docker_source_path="$PWD/${SOURCE_PATH}"
 docker_builds_path="$PWD/${BUILDS_PATH}"
-if [[ ! "$OSTYPE" ]]; then
-    echo "### bash-variable OSTYPE not set - abort"
-    exit 1
-fi
 # git-bash will return msys; Cygwin returs cygwin
 if [[ "${OSTYPE}" == "msys" || "${OSTYPE}" == "cygwin" ]]; then
     docker_source_path=$(echo "$docker_source_path" | sed -e 's|^/\([A-Za-z]\)/|\1:/|')
