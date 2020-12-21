@@ -23,6 +23,8 @@ if [[ ! "$OSTYPE" ]]; then
     exit 1
 fi
 
+command -v docker >/dev/null 2>&1 || { echo >&2 "Command docker is required but it's not installed. Aborting."; exit 2; }
+
 #
 # RUN
 #
